@@ -1,6 +1,24 @@
+<div align="center">
+  <a href="https://github.com/SafeRL-Lab/nano-claude-code">
+    <img src="https://github.com/SafeRL-Lab/nano-claude-code/blob/main/docs/demo.gif" alt="Logo" width="800"> 
+  </a>
+  
+<h1 align="center" style="font-size: 30px;"><strong><em>Nano Claude Code</em></strong>: Nano Claude Code: A Minimal Python Reimplementation (~920 Lines)</h1>
+<p align="center">
+    <a href="https://github.com/chauncygu/collection-claude-code-source-code">The newest source of Claude Code</a>
+    ·
+    <a href="https://github.com/SafeRL-Lab/nano-claude-code/issues">Issue</a>
+  </p>
+</div>
+
 # Nano Claude Code
 
 A minimal Python implementation of Claude Code (~920 lines total), covering all core features.
+
+
+
+
+---
 
 ## Features
 
