@@ -15,7 +15,7 @@
 
 
 ## 🔥🔥🔥 News (Pacific Time)
-- Apr 01, 2026: Support more closed-source models and open-source models.
+- Apr 01, 2026: Support more closed-source models and open-source models: **Claude, GPT, Gemini, Kimi, Qwen, Zhipu, DeepSeek, and local open-source models via Ollama or any OpenAI-compatible endpoint.**
 
 
 # Nano Claude Code
