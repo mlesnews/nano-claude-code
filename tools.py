@@ -6,6 +6,9 @@ import subprocess
 from pathlib import Path
 from typing import Callable, Optional
 
+from tool_registry import ToolDef, register_tool
+from tool_registry import execute_tool as _registry_execute
+
 # ── Tool JSON schemas (sent to Claude API) ─────────────────────────────────
 
 TOOL_SCHEMAS = [
@@ -299,7 +302,7 @@ def _websearch(query: str) -> str:
         return f"Error: {e}"
 
 
-# ── Dispatcher ─────────────────────────────────────────────────────────────
+# ── Dispatcher (backward-compatible wrapper) ──────────────────────────────
 
 def execute_tool(
     name: str,
@@ -307,7 +310,10 @@ def execute_tool(
     permission_mode: str = "auto",
     ask_permission: Optional[Callable[[str], bool]] = None,
 ) -> str:
-    """Dispatch tool execution; ask permission for write/destructive ops."""
+    """Dispatch tool execution; ask permission for write/destructive ops.
+
+    Permission checking is done here, then delegation goes to the registry.
+    """
 
     def _check(desc: str) -> bool:
         """Return True if action is allowed."""
@@ -317,43 +323,91 @@ def execute_tool(
             return ask_permission(desc)
         return True  # headless: allow everything
 
-    if name == "Read":
-        return _read(inputs["file_path"], inputs.get("limit"), inputs.get("offset"))
-
-    elif name == "Write":
+    # --- permission gate (same logic as before) ---
+    if name == "Write":
         if not _check(f"Write to {inputs['file_path']}"):
             return "Denied: user rejected write operation"
-        return _write(inputs["file_path"], inputs["content"])
-
     elif name == "Edit":
         if not _check(f"Edit {inputs['file_path']}"):
             return "Denied: user rejected edit operation"
-        return _edit(inputs["file_path"], inputs["old_string"],
-                     inputs["new_string"], inputs.get("replace_all", False))
-
     elif name == "Bash":
         cmd = inputs["command"]
         if permission_mode != "accept-all" and not _is_safe_bash(cmd):
             if not _check(f"Bash: {cmd}"):
                 return "Denied: user rejected bash command"
-        return _bash(cmd, inputs.get("timeout", 30))
 
-    elif name == "Glob":
-        return _glob(inputs["pattern"], inputs.get("path"))
+    return _registry_execute(name, inputs, {})
 
-    elif name == "Grep":
-        return _grep(
-            inputs["pattern"], inputs.get("path"), inputs.get("glob"),
-            inputs.get("output_mode", "files_with_matches"),
-            inputs.get("case_insensitive", False),
-            inputs.get("context", 0),
-        )
 
-    elif name == "WebFetch":
-        return _webfetch(inputs["url"], inputs.get("prompt"))
+# ── Register built-in tools with the plugin registry ─────────────────────
 
-    elif name == "WebSearch":
-        return _websearch(inputs["query"])
+def _register_builtins() -> None:
+    """Register all 8 built-in tools into the central registry."""
+    _tool_defs = [
+        ToolDef(
+            name="Read",
+            schema=TOOL_SCHEMAS[0],
+            func=lambda p, c: _read(**p),
+            read_only=True,
+            concurrent_safe=True,
+        ),
+        ToolDef(
+            name="Write",
+            schema=TOOL_SCHEMAS[1],
+            func=lambda p, c: _write(**p),
+            read_only=False,
+            concurrent_safe=False,
+        ),
+        ToolDef(
+            name="Edit",
+            schema=TOOL_SCHEMAS[2],
+            func=lambda p, c: _edit(**p),
+            read_only=False,
+            concurrent_safe=False,
+        ),
+        ToolDef(
+            name="Bash",
+            schema=TOOL_SCHEMAS[3],
+            func=lambda p, c: _bash(p["command"], p.get("timeout", 30)),
+            read_only=False,
+            concurrent_safe=False,
+        ),
+        ToolDef(
+            name="Glob",
+            schema=TOOL_SCHEMAS[4],
+            func=lambda p, c: _glob(p["pattern"], p.get("path")),
+            read_only=True,
+            concurrent_safe=True,
+        ),
+        ToolDef(
+            name="Grep",
+            schema=TOOL_SCHEMAS[5],
+            func=lambda p, c: _grep(
+                p["pattern"], p.get("path"), p.get("glob"),
+                p.get("output_mode", "files_with_matches"),
+                p.get("case_insensitive", False),
+                p.get("context", 0),
+            ),
+            read_only=True,
+            concurrent_safe=True,
+        ),
+        ToolDef(
+            name="WebFetch",
+            schema=TOOL_SCHEMAS[6],
+            func=lambda p, c: _webfetch(p["url"], p.get("prompt")),
+            read_only=True,
+            concurrent_safe=True,
+        ),
+        ToolDef(
+            name="WebSearch",
+            schema=TOOL_SCHEMAS[7],
+            func=lambda p, c: _websearch(p["query"]),
+            read_only=True,
+            concurrent_safe=True,
+        ),
+    ]
+    for td in _tool_defs:
+        register_tool(td)
 
-    else:
-        return f"Unknown tool: {name}"
+
+_register_builtins()

@@ -5,7 +5,9 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Generator
 
-from tools import TOOL_SCHEMAS, execute_tool
+from tool_registry import get_tool_schemas
+from tools import execute_tool
+import tools as _tools_init  # ensure built-in tools are registered on import
 from providers import stream, AssistantTurn, TextChunk, ThinkingChunk, detect_provider
 
 # ── Re-export event types (used by nano_claude.py) ────────────────────────
@@ -72,7 +74,7 @@ def run(
             model=config["model"],
             system=system_prompt,
             messages=state.messages,
-            tool_schemas=TOOL_SCHEMAS,
+            tool_schemas=get_tool_schemas(),
             config=config,
         ):
             if isinstance(event, (TextChunk, ThinkingChunk)):
