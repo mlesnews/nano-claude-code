@@ -213,9 +213,9 @@ Get your API key at [dashscope.aliyun.com](https://dashscope.aliyun.com).
 ```bash
 export DASHSCOPE_API_KEY=sk-...
 
-python nano_claude.py --model qwen/qwen-max
-python nano_claude.py --model qwen/qwq-32b
-python nano_claude.py --model qwen/qwen2.5-coder-32b-instruct
+python nano_claude.py --model qwen/Qwen3.5-Plus
+python nano_claude.py --model qwen/Qwen3-MAX
+python nano_claude.py --model qwen/Qwen3.5-Flash
 ```
 
 ### Zhipu GLM
