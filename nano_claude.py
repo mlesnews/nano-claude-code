@@ -1083,10 +1083,14 @@ def repl(config: dict, initial_prompt: str = None):
     from config import HISTORY_FILE
     from context import build_system_prompt
     from agent import AgentState, run, TextChunk, ThinkingChunk, ToolStart, ToolEnd, TurnDone, PermissionRequest
+    from lumina_hooks import fire_session_start, fire_session_stop  # [C-000003916]
 
     setup_readline(HISTORY_FILE)
     state = AgentState()
     verbose = config.get("verbose", False)
+
+    # [C-000003916] Fire SessionStart hook
+    fire_session_start(config, state)
 
     # Banner
     if not initial_prompt:
@@ -1169,6 +1173,8 @@ def repl(config: dict, initial_prompt: str = None):
             user_input = input(prompt).strip()
         except (EOFError, KeyboardInterrupt):
             print()
+            # [C-000003916] Fire SessionStop hook
+            fire_session_stop(state)
             try:
                 save_latest("", state, config)
             except Exception as e:
@@ -1228,6 +1234,10 @@ def main():
                         help="Show thinking + token counts")
     parser.add_argument("--thinking", action="store_true",
                         help="Enable extended thinking")
+    parser.add_argument("--no-stream", action="store_true",
+                        help="Disable streaming (use non-streaming API calls)")
+    parser.add_argument("--max-tokens", type=int, default=None,
+                        help="Max output tokens per response")
     parser.add_argument("--version", action="store_true", help="Print version")
     parser.add_argument("-h", "--help", action="store_true", help="Show help")
 
@@ -1255,6 +1265,10 @@ def main():
         config["verbose"] = True
     if args.thinking:
         config["thinking"] = True
+    if args.no_stream:
+        config["no_stream"] = True
+    if args.max_tokens:
+        config["max_tokens"] = args.max_tokens
 
     # Check API key for active provider (warn only, don't block local providers)
     if not has_api_key(config):

@@ -428,10 +428,12 @@ def stream_openai_compat(
 
     oai_messages = [{"role": "system", "content": system}] + messages_to_openai(messages)
 
+    use_stream = not config.get("no_stream", False)
+
     kwargs: dict = {
         "model":    model,
         "messages": oai_messages,
-        "stream":   True,
+        "stream":   use_stream,
     }
     if tool_schemas and not config.get("no_tools"):
         kwargs["tools"] = tools_to_openai(tool_schemas)
@@ -444,6 +446,27 @@ def stream_openai_compat(
     text          = ""
     tool_buf: dict = {}   # index → {id, name, args_str}
     in_tok = out_tok = 0
+
+    if not use_stream:
+        # Non-streaming: single request, yield full response
+        resp = client.chat.completions.create(**kwargs)
+        choice = resp.choices[0]
+        text = choice.message.content or ""
+        if text:
+            yield TextChunk(text)
+        if hasattr(resp, "usage") and resp.usage:
+            in_tok = resp.usage.prompt_tokens or 0
+            out_tok = resp.usage.completion_tokens or 0
+        tool_calls = []
+        if choice.message.tool_calls:
+            for tc in choice.message.tool_calls:
+                try:
+                    inp = json.loads(tc.function.arguments) if tc.function.arguments else {}
+                except json.JSONDecodeError:
+                    inp = {"_raw": tc.function.arguments}
+                tool_calls.append({"id": tc.id, "name": tc.function.name, "input": inp})
+        yield AssistantTurn(text, tool_calls, in_tok, out_tok)
+        return
 
     stream = client.chat.completions.create(**kwargs)
     for chunk in stream:
