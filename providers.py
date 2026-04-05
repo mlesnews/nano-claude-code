@@ -123,6 +123,17 @@ PROVIDERS: dict[str, dict] = {
         "context_limit": 128000,
         "models": [],
     },
+    "gateway": {
+        "type":       "openai",
+        "api_key_env": None,
+        "base_url":   "http://localhost:8080/v1",
+        "api_key":    "sk-lumina-gateway-2026",
+        "context_limit": 32000,
+        "models": [
+            "local/fast", "local/code", "local/balanced",
+            "cpu/fast", "kaiju/bitnet",
+        ],
+    },
 }
 
 # Cost per million tokens (approximate, fallback to 0 for unknown)
@@ -159,6 +170,9 @@ _PREFIXES = [
     ("qwq-",          "qwen"),
     ("glm-",          "zhipu"),
     ("deepseek-",     "deepseek"),
+    ("local/",        "gateway"),
+    ("cpu/",          "gateway"),
+    ("kaiju/",        "gateway"),
     ("llama",         "ollama"),
     ("mistral",       "ollama"),
     ("phi",           "ollama"),
@@ -166,20 +180,33 @@ _PREFIXES = [
 ]
 
 
+_GATEWAY_ALIASES = {"local", "cpu", "kaiju"}
+
+
 def detect_provider(model: str) -> str:
     """Return provider name for a model string.
     Supports 'provider/model' explicit format, or auto-detect by prefix."""
     if "/" in model:
-        return model.split("/", 1)[0]
-    for prefix, pname in _PREFIXES:
-        if model.lower().startswith(prefix):
+        prefix = model.split("/", 1)[0]
+        if prefix in _GATEWAY_ALIASES:
+            return "gateway"
+        return prefix
+    for pfx, pname in _PREFIXES:
+        if model.lower().startswith(pfx):
             return pname
     return "openai"   # fallback
 
 
 def bare_model(model: str) -> str:
-    """Strip 'provider/' prefix if present."""
-    return model.split("/", 1)[1] if "/" in model else model
+    """Strip 'provider/' prefix if present.
+    For gateway aliases (local/, cpu/, kaiju/), keep the full name since
+    the gateway expects model names like 'local/fast'."""
+    if "/" in model:
+        prefix = model.split("/", 1)[0]
+        if prefix in _GATEWAY_ALIASES:
+            return model  # gateway needs full name e.g. "local/fast"
+        return model.split("/", 1)[1]
+    return model
 
 
 def get_api_key(provider_name: str, config: dict) -> str:
@@ -471,6 +498,48 @@ def stream_openai_compat(
     yield AssistantTurn(text, tool_calls, in_tok, out_tok)
 
 
+def is_gateway_healthy() -> bool:
+    """Check if the Lumina LLM gateway is responsive (<1s timeout)."""
+    import urllib.request
+    try:
+        resp = urllib.request.urlopen("http://localhost:8080/health/liveliness", timeout=1)
+        return resp.status == 200
+    except Exception:
+        return False
+
+
+def get_shift_model() -> str:
+    """Pick the best gateway model based on current EST time shift."""
+    from datetime import datetime
+    try:
+        import pytz
+        hour = datetime.now(pytz.timezone("America/New_York")).hour
+    except ImportError:
+        hour = datetime.now().hour
+    if hour < 8:
+        return "gateway/local/fast"         # NIGHT: smallest, cheapest
+    elif hour < 16:
+        return "gateway/local/balanced"     # DAY: best quality
+    return "gateway/local/code"             # EVENING: code-optimized
+
+
+def get_trading_context() -> str:
+    """Read confidence aggregator and return a 1-line trading summary, or empty string."""
+    from pathlib import Path
+    try:
+        p = Path.home() / "my_projects" / "lumina" / "docker" / "cluster-ui" / "data" / "trading" / "state" / "confidence_aggregator.json"
+        if not p.exists():
+            return ""
+        data = json.loads(p.read_text())
+        pct = data.get("readiness_pct", 0)
+        label = data.get("readiness_label", "UNKNOWN")
+        cycle = data.get("cycle_count", 0)
+        rec = data.get("recommendation", "")[:80]
+        return f"[TRADING] Confidence: {pct:.1f}% ({label}), cycle {cycle}. {rec}"
+    except Exception:
+        return ""
+
+
 def stream(
     model: str,
     system: str,
@@ -487,6 +556,21 @@ def stream(
     model_name    = bare_model(model)
     prov          = PROVIDERS.get(provider_name, PROVIDERS["openai"])
     api_key       = get_api_key(provider_name, config)
+
+    # Gateway provider: health check with Ollama fallback
+    if provider_name == "gateway" and not is_gateway_healthy():
+        # Fallback to direct Ollama
+        provider_name = "ollama"
+        prov = PROVIDERS["ollama"]
+        api_key = get_api_key("ollama", config)
+        # Map gateway model names to Ollama equivalents
+        _gw_to_ollama = {
+            "local/fast": "llama3.2:3b",
+            "local/code": "qwen2.5-coder:7b",
+            "local/balanced": "qwen2.5:14b",
+            "cpu/fast": "llama3.2:3b",
+        }
+        model_name = _gw_to_ollama.get(model_name, "llama3.2:3b")
 
     if prov["type"] == "anthropic":
         yield from stream_anthropic(api_key, model_name, system, messages, tool_schemas, config)
