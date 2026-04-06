@@ -72,18 +72,24 @@ def _log_event(event: str, tool: str, allowed: bool, reason: str | None = None) 
 
 
 def _publish_block(event: str, tool: str, reason: str) -> None:
+    """Fire-and-forget publish to lumina.governance topic via bus_publisher."""
     try:
-        import subprocess
-        bus_pub = Path.home() / "my_projects" / "lumina" / "hooks" / "claude_code" / "bus_publisher.py"
-        if bus_pub.exists():
-            payload = json.dumps({
-                "event_type": "hook_block", "source": "nano-claude",
-                "hook_event": event, "tool": tool, "reason": reason,
-            })
-            subprocess.Popen(
-                ["python3", str(bus_pub), "lumina.governance", "hook_block", payload],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            )
+        import sys as _sys
+        _bus_path = str(Path.home() / "my_projects" / "lumina" / "hooks" / "claude_code")
+        if _bus_path not in _sys.path:
+            _sys.path.insert(0, _bus_path)
+        from bus_publisher import publish_event
+        publish_event(
+            topic="lumina.governance",
+            event_type="hook.block",
+            payload={
+                "source": "nano-claude-code",
+                "hook_event": event,
+                "tool": tool,
+                "reason": reason,
+            },
+            severity="WARN",
+        )
     except Exception:
         pass
 
