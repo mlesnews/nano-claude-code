@@ -435,6 +435,9 @@ def stream_openai_compat(
         "messages": oai_messages,
         "stream":   use_stream,
     }
+    # Ollama /v1 compat: increase context window beyond default 16K
+    if base_url and "11434" in base_url:
+        kwargs["extra_body"] = {"num_ctx": 32768}
     if tool_schemas and not config.get("no_tools"):
         kwargs["tools"] = tools_to_openai(tool_schemas)
         # "auto" requires vLLM --enable-auto-tool-choice; omit if server doesn't support it
