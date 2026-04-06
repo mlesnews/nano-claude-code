@@ -13,7 +13,7 @@ from pathlib import Path
 
 logger = logging.getLogger("context_loader")
 
-_BATON_DIR = Path.home() / ".claude" / "data" / "relay" / "batons"
+_BATON_DIR = Path.home() / "my_projects" / "lumina" / "data" / "relay" / "batons"
 _ROADMAP = Path.home() / ".claude" / "projects" / "-home-mlesn" / "memory" / "roadmap.md"
 _CONFIDENCE = (Path.home() / "my_projects" / "lumina" / "docker" / "cluster-ui"
                / "data" / "trading" / "state" / "confidence_aggregator.json")
@@ -67,20 +67,29 @@ def load_roadmap_top3() -> str:
         items = []
         in_t1 = False
         for line in lines:
-            if "## T1" in line or "## T0" in line:
+            if line.startswith("## T1"):
                 in_t1 = True
                 continue
-            if line.startswith("## T2") or line.startswith("## T3"):
+            if in_t1 and line.startswith("## T"):
                 break
-            if in_t1 and line.startswith("|") and "%" in line and "100%" not in line:
-                parts = [p.strip() for p in line.split("|")]
-                if len(parts) >= 5:
-                    num = parts[1]
-                    name = parts[2][:40]
-                    pct = parts[3]
-                    items.append(f"#{num} {name} ({pct})")
-                if len(items) >= 3:
-                    break
+            if not in_t1:
+                continue
+            if not line.startswith("|"):
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            if len(parts) < 5:
+                continue
+            pct_field = parts[3]
+            # Skip headers, separators, completed items
+            if "100%" in pct_field or "DONE" in pct_field:
+                continue
+            if "---" in pct_field or pct_field == "%" or "Workstream" in parts[2]:
+                continue
+            num = parts[1]
+            name = parts[2][:40]
+            items.append(f"#{num} {name} ({pct_field})")
+            if len(items) >= 3:
+                break
         return "Roadmap: " + " | ".join(items) if items else ""
     except Exception as e:
         logger.debug("Roadmap load failed: %s", e)

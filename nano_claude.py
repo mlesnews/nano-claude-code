@@ -1114,6 +1114,15 @@ def repl(config: dict, initial_prompt: str = None):
         # Rebuild system prompt each turn (picks up cwd changes, etc.)
         system_prompt = build_system_prompt()
 
+        # [C-000003916] Inject Lumina relay context (trading + roadmap + baton)
+        try:
+            from context_loader import build_system_context
+            lumina_ctx = build_system_context()
+            if lumina_ctx:
+                system_prompt = lumina_ctx + "\n\n" + system_prompt
+        except Exception:
+            pass  # graceful degradation — context loader is optional
+
         print(clr("\n╭─ Claude ", "dim") + clr("●", "green") + clr(" ─────────────────────────", "dim"))
         print(clr("│ ", "dim"), end="", flush=True)
 
