@@ -563,6 +563,22 @@ def get_trading_context() -> str:
         return ""
 
 
+_TRADING_KEYWORDS = frozenset({
+    "btc", "eth", "sol", "ada", "xrp", "bnb", "doge", "crypto", "bitcoin",
+    "ethereum", "trading", "confidence", "paper trading", "pnl", "p&l",
+    "market", "regime", "signal", "grid bot", "backtest", "sharpe",
+})
+
+
+def _is_trading_query(messages: list) -> bool:
+    """Check if the latest user message mentions trading-related terms."""
+    for m in reversed(messages):
+        if m.get("role") == "user":
+            text = (m.get("content") or "").lower()
+            return any(kw in text for kw in _TRADING_KEYWORDS)
+    return False
+
+
 def stream(
     model: str,
     system: str,
@@ -575,6 +591,12 @@ def stream(
     Auto-detects provider from model string.
     Yields: TextChunk | ThinkingChunk | AssistantTurn
     """
+    # Inject trading context when query is trading-related
+    if _is_trading_query(messages):
+        ctx = get_trading_context()
+        if ctx:
+            system = f"{ctx}\n\n{system}" if system else ctx
+
     provider_name = detect_provider(model)
     model_name    = bare_model(model)
     prov          = PROVIDERS.get(provider_name, PROVIDERS["openai"])
