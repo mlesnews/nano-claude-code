@@ -8,8 +8,11 @@ from typing import Generator
 from tool_registry import get_tool_schemas
 from tools import execute_tool
 import tools as _tools_init  # ensure built-in tools are registered on import
-from providers import stream, AssistantTurn, TextChunk, ThinkingChunk, detect_provider
+from providers import stream, AssistantTurn, TextChunk, ThinkingChunk, detect_provider, get_trading_context
 from compaction import maybe_compact
+from lumina_hooks import (  # [C-000003916] hook engine integration
+    fire_user_prompt_submit, fire_pre_tool_use, fire_post_tool_use,
+)
 
 # ── Re-export event types (used by nano_claude.py) ────────────────────────
 __all__ = [
@@ -69,6 +72,12 @@ def run(
         depth: sub-agent nesting depth, 0 for top-level
         cancel_check: callable returning True to abort the loop early
     """
+    # [C-000003916] Fire UserPromptSubmit hook before processing
+    hook_result = fire_user_prompt_submit(user_message, state)
+    # Inject any additional context from hooks into the user message
+    if hook_result.additional_context:
+        user_message += "\n\n" + "\n".join(hook_result.additional_context)
+
     # Append user turn in neutral format
     state.messages.append({"role": "user", "content": user_message})
 
@@ -84,10 +93,21 @@ def run(
         # Compact context if approaching window limit
         maybe_compact(state, config)
 
+        # Inject trading context when query looks trading-related
+        _effective_system = system_prompt
+        if state.turn_count == 1:
+            _trading_kw = {"btc", "eth", "sol", "xrp", "ada", "doge", "bnb", "crypto",
+                           "trading", "confidence", "market", "portfolio", "position"}
+            _last_msg = (state.messages[-1].get("content", "") or "").lower()
+            if any(kw in _last_msg for kw in _trading_kw):
+                _tc = get_trading_context()
+                if _tc:
+                    _effective_system = f"{_tc}\n\n{system_prompt}"
+
         # Stream from provider (auto-detected from model name)
         for event in stream(
             model=config["model"],
-            system=system_prompt,
+            system=_effective_system,
             messages=state.messages,
             tool_schemas=get_tool_schemas(),
             config=config,
@@ -118,6 +138,19 @@ def run(
         for tc in assistant_turn.tool_calls:
             yield ToolStart(tc["name"], tc["input"])
 
+            # [C-000003916] PreToolUse hook — may block execution
+            pre_hook = fire_pre_tool_use(tc["name"], tc["input"])
+            if not pre_hook.allowed:
+                result = f"Blocked by hook: {pre_hook.block_reason or 'policy violation'}"
+                yield ToolEnd(tc["name"], result, False)
+                state.messages.append({
+                    "role":         "tool",
+                    "tool_call_id": tc["id"],
+                    "name":         tc["name"],
+                    "content":      result,
+                })
+                continue
+
             # Permission gate
             permitted = _check_permission(tc, config)
             if not permitted:
@@ -133,6 +166,11 @@ def run(
                     permission_mode="accept-all",  # already gate-checked above
                     config=config,
                 )
+
+            # [C-000003916] PostToolUse hook — may inject additional context
+            post_hook = fire_post_tool_use(tc["name"], result)
+            if post_hook.additional_context:
+                result += "\n\n[Hook context]\n" + "\n".join(post_hook.additional_context)
 
             yield ToolEnd(tc["name"], result, permitted)
 
