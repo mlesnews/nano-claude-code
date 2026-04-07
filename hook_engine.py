@@ -52,6 +52,16 @@ def _build_write_blocks() -> list[tuple[re.Pattern, str]]:
     ]
 
 
+# PostToolUse: redact secrets from output
+_SECRET_PATTERNS = [
+    re.compile(r"(eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+)"),  # JWT
+    re.compile(r"(sk-[A-Za-z0-9]{20,})"),  # API keys
+    re.compile(r"(ghp_[A-Za-z0-9]{36,})"),  # GitHub PAT
+    re.compile(r"(xox[bpsa]-[A-Za-z0-9-]{20,})"),  # Slack tokens
+    re.compile(r"(AKIA[A-Z0-9]{16})"),  # AWS access key
+]
+
+
 _COMPILED_BLOCKS = _build_bash_blocks()
 _COMPILED_WRITE_BLOCKS = _build_write_blocks()
 
@@ -109,6 +119,8 @@ class HookEngine:
         ctx = context or {}
         if event == "PreToolUse":
             return self._check_pre_tool(tool, ctx)
+        if event == "PostToolUse":
+            return self._check_post_tool(tool, ctx)
         _log_event(event, tool, True)
         return HookResult()
 
@@ -122,6 +134,24 @@ class HookEngine:
                     _publish_block("PreToolUse", tool, message)
                     return HookResult(allowed=False, block_reason=message,
                                      system_messages=[f"[HOOK-ENGINE] BLOCKED: {message}"])
+            # DR-1: Blast-radius guard — block git commits deleting >50 files (PM-000003916)
+            if re.search(r"git\s+commit", command):
+                try:
+                    import subprocess
+                    result = subprocess.run(
+                        ["git", "diff", "--cached", "--diff-filter=D", "--name-only"],
+                        capture_output=True, text=True, timeout=5,
+                    )
+                    deleted = [l for l in result.stdout.strip().split("\n") if l]
+                    if len(deleted) > 50:
+                        msg = f"BLAST RADIUS: commit would delete {len(deleted)} files (>50 limit)"
+                        self._block_count += 1
+                        _log_event("PreToolUse", tool, False, msg)
+                        _publish_block("PreToolUse", tool, msg)
+                        return HookResult(allowed=False, block_reason=msg,
+                                         system_messages=[f"[HOOK-ENGINE] BLOCKED: {msg}"])
+                except Exception:
+                    pass
 
         elif tool in ("Write", "Edit"):
             file_path = ctx.get("file_path", "")
@@ -134,6 +164,26 @@ class HookEngine:
                                      system_messages=[f"[HOOK-ENGINE] BLOCKED: {message}"])
 
         _log_event("PreToolUse", tool, True)
+        return HookResult()
+
+    def _check_post_tool(self, tool: str, ctx: dict) -> HookResult:
+        """Scan tool output for leaked secrets and redact."""
+        output = ctx.get("output", "")
+        if not output or tool not in ("Bash", "Read", "Grep"):
+            _log_event("PostToolUse", tool, True)
+            return HookResult()
+        redacted = False
+        for pattern in _SECRET_PATTERNS:
+            if pattern.search(output):
+                redacted = True
+                _log_event("PostToolUse", tool, False, "Secret pattern detected in output")
+                _publish_block("PostToolUse", tool, "Secret leaked in tool output — redacted")
+                break
+        if redacted:
+            return HookResult(
+                system_messages=["[HOOK-ENGINE] WARNING: Potential secret detected in output. Redact before logging."]
+            )
+        _log_event("PostToolUse", tool, True)
         return HookResult()
 
     @property
