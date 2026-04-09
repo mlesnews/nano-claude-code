@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import providers
+from lumina_hooks import fire_pre_compact, fire_post_compact  # [C-000003916]
 
 
 # ── Token estimation ──────────────────────────────────────────────────────
@@ -185,6 +186,9 @@ def maybe_compact(state, config: dict) -> bool:
     if estimate_tokens(state.messages) <= threshold:
         return False
 
+    # [C-000003916] PreCompact hook
+    fire_pre_compact(state.messages)
+
     # Layer 1: snip old tool results
     snip_old_tool_results(state.messages)
 
@@ -193,4 +197,11 @@ def maybe_compact(state, config: dict) -> bool:
 
     # Layer 2: auto-compact
     state.messages = compact_messages(state.messages, config)
+
+    # [C-000003916] PostCompact hook — extract summary from compacted messages
+    summary = ""
+    if state.messages and state.messages[0].get("content", ""):
+        summary = state.messages[0]["content"]
+    fire_post_compact(summary)
+
     return True

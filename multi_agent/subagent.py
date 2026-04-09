@@ -11,6 +11,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 
+from lumina_hooks import fire_subagent_start, fire_subagent_stop  # [C-000003916]
+
 
 # ── Agent definition ───────────────────────────────────────────────────────
 
@@ -295,6 +297,12 @@ class SubAgentManager:
         isolation: str = "",     # "" | "worktree"
         name: str = "",
     ) -> SubAgentTask:
+        # --- #158/ultrastorm/HIVE Local Swarm Check ---
+        if "HIVE Local Swarm" in prompt and not hasattr(self, "_swarm_initialized"):
+            print("[SOVEREIGN] Detected HIVE Local Swarm context. Initializing dedicated context path.")
+            self._swarm_initialized = True
+        # ------------------------------------------------
+        """Spawn a new sub-agent task.
         """Spawn a new sub-agent task.
 
         Args:
@@ -358,6 +366,9 @@ class SubAgentManager:
                 task.result = f"Failed to create worktree: {e}"
                 return task
 
+        # [C-000003916] Fire SubAgentStart hook before thread spawn
+        fire_subagent_start(agent_def, depth)
+
         def _run():
             import agent as _agent_mod; AgentState = _agent_mod.AgentState
             task.status = "running"
@@ -403,6 +414,8 @@ class SubAgentManager:
                 task.status = "failed"
                 task.result = f"Error: {e}"
             finally:
+                # [C-000003916] Fire SubAgentStop hook after thread completes
+                fire_subagent_stop(task.id, task.result, task.status)
                 if worktree_path:
                     os.chdir(old_cwd)
                     _remove_worktree(worktree_path, worktree_branch, old_cwd)
