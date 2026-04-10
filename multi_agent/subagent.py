@@ -297,12 +297,6 @@ class SubAgentManager:
         isolation: str = "",     # "" | "worktree"
         name: str = "",
     ) -> SubAgentTask:
-        # --- #158/ultrastorm/HIVE Local Swarm Check ---
-        if "HIVE Local Swarm" in prompt and not hasattr(self, "_swarm_initialized"):
-            print("[SOVEREIGN] Detected HIVE Local Swarm context. Initializing dedicated context path.")
-            self._swarm_initialized = True
-        # ------------------------------------------------
-        """Spawn a new sub-agent task.
         """Spawn a new sub-agent task.
 
         Args:
@@ -317,6 +311,11 @@ class SubAgentManager:
         Returns:
             SubAgentTask tracking the spawned work.
         """
+        # --- #158/ultrastorm/HIVE Local Swarm Check ---
+        if "HIVE Local Swarm" in prompt and not hasattr(self, "_swarm_initialized"):
+            print("[SOVEREIGN] Detected HIVE Local Swarm context. Initializing dedicated context path.")
+            self._swarm_initialized = True
+        # ------------------------------------------------
         task_id = uuid.uuid4().hex[:12]
         short_name = name or task_id[:8]
         task = SubAgentTask(id=task_id, prompt=prompt, depth=depth, name=short_name)
