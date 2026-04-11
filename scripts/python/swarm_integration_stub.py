@@ -1,4 +1,4 @@
-from scripts.python.lumina_logger import get_logger
+import os
 
 logger = get_logger("SwarmIntegration")
 
@@ -8,7 +8,7 @@ class LocalSwarmConnector:
 
     def connect_to_hive(self) -> bool:
         """Attempts to establish a connection to the HIVE Local Swarm."""
-        # TODO: Implement actual connection logic for #158
+        if not os.getenv("HIVE_API_KEY"): logger.warning("HIVE_API_KEY not found. Connection stub fails.") return False
         logger.debug("SwarmConnector initialized. Placeholder connection successful.")
         return True
 
