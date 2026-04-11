@@ -14,5 +14,5 @@ class LocalSwarmConnector:
 
     def process_ultrastorm_data(self, data: dict) -> dict:
         """Processes data received from the /ultrastorm endpoint."""
-        # TODO: Implement data transformation logic
+        logger.debug(f"Received data for processing: {data}")
         return {"processed": data, "status": "stub"}
