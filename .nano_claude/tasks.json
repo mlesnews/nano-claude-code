@@ -53,6 +53,73 @@
       "metadata": {},
       "created_at": "2026-04-08T13:00:55.574856",
       "updated_at": "2026-04-08T13:00:55.574857"
+    },
+    {
+      "id": "5",
+      "subject": "#158: /ultrastorm + @HIVE Local Swarm - Minimal Stub Implementation",
+      "description": "Implement the initial, smallest meaningful increment for #158: /ultrastorm + @HIVE Local Swarm integration by enhancing the stub file.",
+      "status": "pending",
+      "active_form": "",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-10T19:00:15.068187",
+      "updated_at": "2026-04-10T19:00:15.068188"
+    },
+    {
+      "id": "6",
+      "subject": "Finalize #151 Sovereign Harness Completion",
+      "description": "Completed the final increment for Roadmap Item #151 by updating the completion percentage in roadmap.md to 100%.",
+      "status": "pending",
+      "active_form": "Finalizing #151 Sovereign Harness documentation",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-11T07:01:38.599802",
+      "updated_at": "2026-04-11T07:01:38.599803"
+    },
+    {
+      "id": "7",
+      "subject": "#182 Operator Telemetry Stub Implementation",
+      "description": "Implement the initial stub for Operator Telemetry data collection hooks required for the Grounding Layer 0. This stub should use the lumina logger.",
+      "status": "pending",
+      "active_form": "Implementing Operator Telemetry Stub for #182",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-11T13:01:12.707384",
+      "updated_at": "2026-04-11T13:01:12.707385"
+    },
+    {
+      "id": "8",
+      "subject": "Refine Operator Telemetry Data Collection Hooks",
+      "description": "Complete the next small increment for Grounding Layer 0: Operator Telemetry data collection hooks to increase progress toward 100%.",
+      "status": "pending",
+      "active_form": "Working on Operator Telemetry hooks for Grounding Layer 0",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {
+        "roadmap_item": "#182"
+      },
+      "created_at": "2026-04-12T10:08:06.181180",
+      "updated_at": "2026-04-12T10:08:06.181182"
+    },
+    {
+      "id": "9",
+      "subject": "Implement core logic for /ultrastorm + @HIVE Local Swarm (#158)",
+      "description": "Flesh out the basic processing pipeline for the Local Swarm integration feature to move progress from 0%.",
+      "status": "pending",
+      "active_form": "",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-12T19:01:04.926942",
+      "updated_at": "2026-04-12T19:01:04.926942"
     }
   ]
 }
