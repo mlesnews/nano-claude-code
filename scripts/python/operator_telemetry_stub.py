@@ -1,5 +1,6 @@
 from scripts.python.lumina_logger import get_logger
 from typing import Dict, Any
+import datetime
 
 logger = get_logger("OperatorTelemetry")
 
@@ -9,7 +10,7 @@ def collect_operator_telemetry() -> Dict[str, Any]:
     This is the smallest meaningful increment for #182.
     """
     telemetry_data = {
-        "timestamp": "PLACEHOLDER_TIME", # Needs refinement later
+        "timestamp": datetime.datetime.now().isoformat(),
         "system_status": "INITIALIZED",
         "component_version": "0.1.0-stub",
         "operator_id": "SYSTEM_OPERATOR_001"
