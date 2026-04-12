@@ -15,4 +15,6 @@ class LocalSwarmConnector:
     def process_ultrastorm_data(self, data: dict) -> dict:
         """Processes data received from the /ultrastorm endpoint."""
         logger.debug(f"Received data for processing: {data}")
-        return {"processed": data, "status": "stub"}
+    def process_swarm_data(self, data: dict) -> bool:
+        """Placeholder for initiating core swarm processing logic."""
+        return True
