@@ -25,5 +25,7 @@ class UltrastormSwarmManager:
 
     def run_swarm_consensus(self, data_chunk: dict) -> dict:
         logger.info("Running local swarm consensus...")
+        if not all(node.get_health_status() for node in self.nodes):
+            logger.warning("Consensus failed: One or more nodes are inactive.")
+            return {"status": "Consensus Failed", "reason": "Node health issue"}
         # Logic for local decision-making based on multiple nodes
-        return {"status": "Consensus Achieved", "data": data_chunk}
