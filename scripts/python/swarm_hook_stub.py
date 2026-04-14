@@ -1,4 +1,4 @@
-from scripts.python.lumina_logger import get_logger
+import json
 from lumina_hook_engine import HookEngine
 from typing import Any
 
@@ -24,3 +24,7 @@ def check_swarm_prerequisites(user_input: str) -> bool:
     logger.debug(f"Running Swarm pre-check for input: {user_input[:30]}...")
     # Placeholder logic: Assume swarm is active if input contains 'swarm'
     return "swarm" in user_input.lower()
+
+def _serialize_swarm_result(raw_data: dict) -> str:
+    """Serializes raw dictionary data into a standardized JSON string for transmission."""
+    return json.dumps(raw_data)
