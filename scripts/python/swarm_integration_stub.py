@@ -22,5 +22,6 @@ def process_local_swarm_data(node_data: dict) -> bool:
     status = node_data['status']
     
     print(f"INFO: Successfully validated data for Node {node_id}. Status: {status}")
-    # Future implementation: Integrate with consensus/health checking service
+    # ACTION: Log processed data payload to the local telemetry buffer.
+    print(f"TELEMETRY_LOG: Payload processed for {node_id} at {datetime.datetime.now().isoformat()}")
     return True
