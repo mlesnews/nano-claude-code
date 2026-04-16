@@ -120,6 +120,84 @@
       "metadata": {},
       "created_at": "2026-04-12T19:01:04.926942",
       "updated_at": "2026-04-12T19:01:04.926942"
+    },
+    {
+      "id": "10",
+      "subject": "Finalize Sovereign Harness Integration (#151)",
+      "description": "Address the remaining 5% gap in Sovereign Harness integration, focusing on the 'nano-claude-code + l' component, as this item was not the primary focus of today's commits.",
+      "status": "pending",
+      "active_form": "Working on Sovereign Harness (#151)",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-13T01:01:15.480853",
+      "updated_at": "2026-04-13T01:01:15.480854"
+    },
+    {
+      "id": "11",
+      "subject": "[SOVEREIGN] Advance Local Swarm Integration (#158)",
+      "description": "Implement initial data validation and placeholder consensus check within local_swarm_connector.py to move #158 from 20% to a higher completion percentage.",
+      "status": "pending",
+      "active_form": "",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-13T13:01:13.346331",
+      "updated_at": "2026-04-13T13:01:13.346333"
+    },
+    {
+      "id": "12",
+      "subject": "[SOVEREIGN] Finalize Sovereign Harness Integration (#151)",
+      "description": "Finalize the remaining 5% of the Sovereign Harness implementation (#151), focusing on the integration layer between nano-claude-code and the 'l' component to reach 100% completion.",
+      "status": "pending",
+      "active_form": "Completing Sovereign Harness Integration",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-13T19:01:15.331989",
+      "updated_at": "2026-04-13T19:01:15.331990"
+    },
+    {
+      "id": "13",
+      "subject": "Progress on #158 Local Swarm Integration",
+      "description": "Select the least progressed item from the roadmap (#158 Local Swarm) and implement the next smallest logical increment, commit the change, update roadmap.md, and summarize.",
+      "status": "completed",
+      "active_form": "",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-14T07:01:37.979685",
+      "updated_at": "2026-04-14T07:08:29.523284"
+    },
+    {
+      "id": "14",
+      "subject": "Implement #158 Local Swarm stub functionality",
+      "description": "Implement the smallest meaningful increment for the #158 Local Swarm item on the roadmap.",
+      "status": "pending",
+      "active_form": "Working on #158 Local Swarm integration",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-15T01:01:24.877014",
+      "updated_at": "2026-04-15T01:01:24.877015"
+    },
+    {
+      "id": "15",
+      "subject": "[SOVEREIGN] Complete #151 Sovereign Harness Integration",
+      "description": "Execute the smallest meaningful increment for Roadmap item #151: Sovereign Harness \u2014 nano-claude-code + l. This involves finalizing the integration points.",
+      "status": "pending",
+      "active_form": "Working on #151 Sovereign Harness completion",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-16T01:01:09.958109",
+      "updated_at": "2026-04-16T01:01:09.958111"
     }
   ]
 }
