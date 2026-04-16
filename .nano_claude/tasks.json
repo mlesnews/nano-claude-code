@@ -198,6 +198,32 @@
       "metadata": {},
       "created_at": "2026-04-16T01:01:09.958109",
       "updated_at": "2026-04-16T01:01:09.958111"
+    },
+    {
+      "id": "16",
+      "subject": "[#151] Finalize Sovereign Harness Integration",
+      "description": "Finalize implementation of Sovereign Harness (#151) by ensuring robust handoff logic between nano-claude-code and 'l', and adding comprehensive validation checks to the entry point. The changes must be committed in the isolated worktree.",
+      "status": "completed",
+      "active_form": "",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-16T01:01:51.816192",
+      "updated_at": "2026-04-16T01:05:59.954734"
+    },
+    {
+      "id": "17",
+      "subject": "[SOVEREIGN] Increment #158 Local Swarm Unit Testing",
+      "description": "Execute the smallest meaningful increment for Roadmap item #158: /ultrastorm + @HIVE Local Swarm. This should involve reviewing the current implementation scaffold and adding basic unit tests for the swarm processing utility.",
+      "status": "pending",
+      "active_form": "Working on #158 Local Swarm increment",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-16T01:06:27.524937",
+      "updated_at": "2026-04-16T01:06:27.524944"
     }
   ]
 }
