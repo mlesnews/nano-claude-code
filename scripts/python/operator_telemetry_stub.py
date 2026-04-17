@@ -12,7 +12,7 @@ def collect_operator_telemetry() -> Dict[str, Any]:
     telemetry_data = {
         "timestamp": datetime.datetime.now().isoformat(),
         "system_status": "INITIALIZED",
-        "mock_api_latency_ms": 12.5,
+        "cycle_number": 3586,
         "operator_id": "SYSTEM_OPERATOR_001"
     }
     logger.info(f"Telemetry stub collected basic data: {telemetry_data['system_status']}")
