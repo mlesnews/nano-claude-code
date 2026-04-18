@@ -1,4 +1,7 @@
-LUMINA CONTEXT
-Trading: 83.2% READY, cycle 3272
-Roadmap: #151 Sovereign Harness — nano-claude-code + l (100%) | #158 /ultrastorm + @HIVE Local Swarm (10%) | #182 Grounding Layer 0 — Operator Telemetry (75%)
-## Ticket (Gap)
+# Lumina Project Roadmap Status
+
+| ID | Feature | Status | Progress | Notes |
+|---|---|---|---|---|
+| #182 | Grounding Layer 0 — Operator Telemetry | In Progress | 40% → 50% | Updated with cycle number tracking. |
+| #151 | Sovereign Harness | Completed | 100% | Final validation logic integrated and committed. |
+| #158 | Local Swarm | In Progress | 60% | Implemented basic data validation and aggregation logic for Local Swarm component. |

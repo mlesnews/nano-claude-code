@@ -224,6 +224,32 @@
       "metadata": {},
       "created_at": "2026-04-16T01:06:27.524937",
       "updated_at": "2026-04-16T01:06:27.524944"
+    },
+    {
+      "id": "18",
+      "subject": "[SOVEREIGN] #158: Initial /ultrastorm skeleton implementation",
+      "description": "Implement the initial skeleton for the /ultrastorm component of roadmap item #158, focusing on connecting to @HIVE data structures.",
+      "status": "pending",
+      "active_form": "Implementing /ultrastorm module skeleton",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-17T01:01:32.345271",
+      "updated_at": "2026-04-17T01:01:32.345272"
+    },
+    {
+      "id": "19",
+      "subject": "[SOVEREIGN] Advance #158 Local Swarm Integration",
+      "description": "Implement the initial, smallest meaningful increment for #158 Local Swarm integration, moving it from 0% to a basic functional stub.",
+      "status": "completed",
+      "active_form": "Basic Local Swarm data aggregation stub implemented.",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-17T13:01:29.009545",
+      "updated_at": "2026-04-17T13:01:45.434003"
     }
   ]
 }
