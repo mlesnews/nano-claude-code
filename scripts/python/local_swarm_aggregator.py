@@ -17,13 +17,21 @@ def aggregate_swarm_data(source_nodes: list[str]) -> Dict[str, Any]:
     # TODO: Implement actual communication protocol and data parsing here.
     # This stub returns mock data to allow build/test flow.
     return {
+    for node in source_nodes:
+        # Simulate fetching a unique latency metric (e.g., 50ms to 150ms)
+        latency = 50 + (hash(node) % 100)
+        node_metrics[node] = {"latency_ms": latency, "status": "OK"}
+    
+    avg_latency = sum(m["latency_ms"] for m in node_metrics.values()) / len(source_nodes)
+    
     return {
         "status": "SUCCESS",
         "nodes_processed": len(source_nodes),
         "metrics": {
-            "avg_cpu_load": sum(1.0 for _ in source_nodes) / len(source_nodes) * 0.8,
-            "memory_usage_gb": 1.2 + (len(source_nodes) * 0.05)
-        }
+            "avg_latency_ms": round(avg_latency, 2),
+            "total_nodes": len(source_nodes)
+        },
+        "node_details": node_metrics
     }
     }
 
