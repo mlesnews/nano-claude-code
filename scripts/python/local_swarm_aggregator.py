@@ -17,8 +17,10 @@ def aggregate_swarm_data(source_nodes: list[str]) -> Dict[str, Any]:
     # TODO: Implement actual communication protocol and data parsing here.
     # This stub returns mock data to allow build/test flow.
     return {
+    node_metrics = {}
     for node in source_nodes:
-        # Simulate fetching a unique latency metric (e.g., 50ms to 150ms)
+        # Placeholder: Replace with actual network call to fetch node metrics.
+        # For now, simulating latency between 50ms and 150ms.
         latency = 50 + (hash(node) % 100)
         node_metrics[node] = {"latency_ms": latency, "status": "OK"}
     
