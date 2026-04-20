@@ -6,7 +6,7 @@ def collect_operator_metrics() -> dict:
     """Collects basic operational metrics for the Grounding Layer."""
     logger.info("Collecting basic operator telemetry metrics.")
     # Placeholder for actual metric collection logic
-    return {"status": "operational", "cpu_load": "N/A"}
+    return {"status": "operational", "cpu_load": "N/A", "memory_usage_mb": 1024}
 
 def process_telemetry_data(data: dict) -> bool:
     """Processes collected telemetry data and logs anomalies."""
