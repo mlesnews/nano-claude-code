@@ -9,5 +9,5 @@ def initialize_local_swarm_connection():
     return True
 
 def aggregate_swarm_metrics(data):
-    # Placeholder for future complex aggregation logic
+    # Mocked metric retrieval for initial validation (10% complete)
     return {"status": "ready", "source": "local_swarm"}

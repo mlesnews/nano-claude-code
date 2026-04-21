@@ -263,6 +263,71 @@
       "metadata": {},
       "created_at": "2026-04-19T01:00:39.461918",
       "updated_at": "2026-04-19T01:00:39.461919"
+    },
+    {
+      "id": "21",
+      "subject": "#182 Operator Telemetry Development",
+      "description": "Analyzed operator_telemetry.py file content. Next steps involve replacing placeholders (timestamp) and expanding validation/reporting logic as per the Grounding Layer 0 requirements.",
+      "status": "pending",
+      "active_form": "Analyzing operator_telemetry.py",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-20T07:03:04.884881",
+      "updated_at": "2026-04-20T07:03:04.884882"
+    },
+    {
+      "id": "22",
+      "subject": "Roadmap Update: Operator Telemetry Increment (#182)",
+      "description": "Implement the smallest meaningful increment for Roadmap Item #182: Grounding Layer 0 \u2014 Operator Telemetry. This requires identifying the correct code module, making a minimal functional change, committing with [SOVEREIGN], and updating roadmap.md.",
+      "status": "completed",
+      "active_form": "Implementing Operator Telemetry Increment",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-20T13:38:33.357858",
+      "updated_at": "2026-04-20T13:39:49.128007"
+    },
+    {
+      "id": "23",
+      "subject": "#158 Local Swarm: Implement HIVE Connection Config Check",
+      "description": "Increase the functionality of the connection stub in local_swarm_aggregator.py to include a mock configuration check for @HIVE integration, moving #158 towards completion.",
+      "status": "pending",
+      "active_form": "Implementing Local Swarm Handshake",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-20T19:01:53.789259",
+      "updated_at": "2026-04-20T19:01:53.789260"
+    },
+    {
+      "id": "24",
+      "subject": "Finalize Sovereign Harness Integration",
+      "description": "Execute the final small increment to complete roadmap item #151 (Sovereign Harness). This involves finishing the remaining 5% of integration and updating the roadmap status.",
+      "status": "completed",
+      "active_form": "Completing Sovereign Harness #151",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-21T01:01:01.725247",
+      "updated_at": "2026-04-21T01:01:25.953563"
+    },
+    {
+      "id": "25",
+      "subject": "Advance #158: Local Swarm Integration",
+      "description": "Execute the smallest meaningful increment for the Local Swarm integration (#158), building on the stub added previously.",
+      "status": "pending",
+      "active_form": "Implementing Local Swarm Integration for #158",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-21T13:00:36.089521",
+      "updated_at": "2026-04-21T13:00:36.089522"
     }
   ]
 }
