@@ -1,7 +1,2 @@
-# Lumina Project Roadmap Status
-
-| ID | Feature | Status | Progress | Notes |
-|---|---|---|---|---|
-| #182 | Grounding Layer 0 — Operator Telemetry | In Progress | 50% | Mock memory usage metric added to telemetry collection. |
-| #151 | Sovereign Harness | Completed | 100% | Final validation logic integrated and committed. |
-| #158 | Local Swarm | In Progress | 35% | Structured mock data fetching implemented in aggregator.py. |
+1	Trading: 88.0% READY, cycle 3887
+2	Roadmap: #182 Grounding Layer 0 — Operator Telemetry (65%) | #151 Sovereign Harness — nano-claude-code + l (95%) | #158 /ultrastorm + @HIVE Local Swarm (25%)
