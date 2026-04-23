@@ -13,7 +13,7 @@ def collect_operator_metrics() -> dict:
         "timestamp": time.time(),
         "status": "operational", 
         "cpu_load_percent": round(random.uniform(10.0, 50.0), 2), 
-        "memory_usage_mb": random.randint(1000, 2048)
+        "network_latency_ms": round(random.uniform(5.0, 50.0), 2)
     }
 
 def process_telemetry_data(data: dict) -> bool:
