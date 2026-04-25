@@ -354,6 +354,19 @@
       "metadata": {},
       "created_at": "2026-04-23T13:00:51.067993",
       "updated_at": "2026-04-23T13:01:43.521477"
+    },
+    {
+      "id": "28",
+      "subject": "#158 /ultrastorm + @HIVE Local Swarm",
+      "description": "Implement the data ingestion and transformation pipeline for @HIVE metrics within the local swarm aggregator, moving from stubs to concrete logic.",
+      "status": "in_progress",
+      "active_form": "Implementing HIVE Data Processing Logic",
+      "owner": "",
+      "blocks": [],
+      "blocked_by": [],
+      "metadata": {},
+      "created_at": "2026-04-24T13:00:51.021616",
+      "updated_at": "2026-04-24T13:00:51.997556"
     }
   ]
 }
