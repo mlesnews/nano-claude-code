@@ -112,8 +112,20 @@ def get_git_info() -> str:
         return ""
 
 
-def get_claude_md() -> str:
-    """Load CLAUDE.md from cwd or parents, and ~/.claude/CLAUDE.md."""
+def get_claude_md(max_chars: int | None = None) -> str:
+    """Load CLAUDE.md from cwd or parents, and ~/.claude/CLAUDE.md.
+
+    C-4757 attempt-2: support per-source budget so callers running against
+    small-n_ctx local models (4096) don't push prompt past 7333 tokens.
+    Default behavior unchanged (no truncation) for normal cwd-aware use.
+    Sovereign service (NANO_CLAUDE_CTX_BUDGET=tight) shrinks via env var.
+    """
+    if max_chars is None:
+        # Env-gated tight budget for sovereign-doit / small-ctx local models.
+        budget_env = os.environ.get("NANO_CLAUDE_CTX_BUDGET", "").lower()
+        if budget_env in ("tight", "small", "1"):
+            max_chars = 1200  # ~300 cl100k tokens — fits 4096 ctx with headroom
+
     content_parts = []
 
     # Global CLAUDE.md
@@ -141,7 +153,10 @@ def get_claude_md() -> str:
 
     if not content_parts:
         return ""
-    return "\n# Memory / CLAUDE.md\n" + "\n\n".join(content_parts) + "\n"
+    out = "\n# Memory / CLAUDE.md\n" + "\n\n".join(content_parts) + "\n"
+    if max_chars and len(out) > max_chars:
+        out = out[:max_chars] + "\n[…truncated, NANO_CLAUDE_CTX_BUDGET=tight]\n"
+    return out
 
 
 def build_system_prompt() -> str:
